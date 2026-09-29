@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Deal Intelligence Agent</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .status {
+            background: #16a34a;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            color: #111827;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 180px;
+            resize: vertical;
+        }
+
+        button {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .save-btn {
+            background: #2563eb;
+            color: white;
+            width: 100%;
+        }
+
+        .brief-btn {
+            background: #7c3aed;
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .briefing {
+            margin-top: 25px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .memory-box {
+            margin-top: 25px;
+            background: #111827;
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .memory-box h3 {
+            margin-bottom: 10px;
+        }
+
+        .memory-status {
+            color: #4ade80;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        @media (max-width: 800px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>Deal Intelligence Agent</h1>
+        <div class="status">● Agent Online</div>
+    </div>
+
+
+    <div class="container">
+
+        <div class="grid">
+
+            <!-- STORE CALL MEMORY -->
+            <div class="card">
+
+                <h2>Store Sales Call</h2>
+
+                <label for="clientName">
+                    Client Name
+                </label>
+
+                <input
+                    type="text"
+                    id="clientName"
+                    placeholder="Example: Acme Corporation"
+                >
+
+                <label for="transcript">
+                    Call Transcript / Notes
+                </label>
+
+                <textarea
+                    id="transcript"
+                    placeholder="Enter what happened during the sales call...
+
+Example:
+Client liked our analytics features.
+CTO is concerned about pricing.
+They require on-premise deployment.
+Competitor mentioned: Salesforce.
+Budget is around $50,000."
+                ></textarea>
+
+                <button
+                    class="save-btn"
+                    onclick="saveMemory()"
+                >
+                    Save to Memory
+                </button>
+
+                <div
+                    id="saveMessage"
+                    class="message"
+                ></div>
+
+            </div>
+
+
+            <!-- GENERATE BRIEFING -->
+            <div class="card">
+
+                <h2>Pre-Call Intelligence</h2>
+
+                <label for="briefClient">
+                    Client Name
+                </label>
+
+                <input
+                    type="text"
+                    id="briefClient"
+                    placeholder="Example: Acme Corporation"
+                >
+
+                <button
+                    class="brief-btn"
+                    onclick="generateBriefing()"
+                >
+                    Generate Smart Briefing
+                </button>
+
+
+                <div
+                    id="briefing"
+                    class="briefing"
+                    style="display:none;"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MEMORY PANEL -->
+        <div class="memory-box">
+
+            <h3>🧠 Hindsight Memory Bank</h3>
+
+            <p class="memory-status" id="memoryStatus">
+                Waiting for sales call data...
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+        Deal Intelligence Agent • Powered by Groq + Hindsight
+    </div>
+
+
+    <script>
+
+        // ==========================================
+        // SAVE CALL TO HINDSIGHT
+        // ==========================================
+
+        async function saveMemory() {
+
+            const clientName =
+                document.getElementById("clientName").value;
+
+            const transcript =
+                document.getElementById("transcript").value;
+
+            const message =
+                document.getElementById("saveMessage");
+
+            if (!clientName || !transcript) {
+
+                showMessage(
+                    message,
+                    "Please enter client name and call details.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            try {
+
+                const response = await fetch(
+                    "/process-call",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            client_name: clientName,
+                            transcript: transcript
+                        })
+                    }
+                );
+
+
+                const data = await response.json();
+
+
+                if (response.ok) {
+
+                    showMessage(
+                        message,
+                        "✓ Call stored successfully in Hindsight memory!",
+                        "success"
+                    );
+
+                    document.getElementById(
+                        "memoryStatus"
+                    ).innerText =
+                        "✓ New memory stored for " +
+                        clientName;
+
+                    // Automatically copy client name
+                    document.getElementById(
+                        "briefClient"
+                    ).value = clientName;
+
+                } else {
+
+                    showMessage(
+                        message,
+                        data.detail || "Failed to save memory.",
+                        "error"
+                    );
+                }
+
+            } catch (error) {
+
+                showMessage(
+                    message,
+                    "Server connection failed. Make sure FastAPI is running.",
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // GENERATE PRE-CALL BRIEFING
+        // ==========================================
+
+        async function generateBriefing() {
+
+            const clientName =
+                document.getElementById("briefClient").value;
+
+            const briefing =
+                document.getElementById("briefing");
+
+
+            if (!clientName) {
+
+                briefing.style.display = "block";
+
+                briefing.innerText =
+                    "Please enter a client name.";
+
+                return;
+            }
+
+
+            briefing.style.display = "block";
+
+            briefing.innerText =
+                "🧠 Searching Hindsight memory...\n\n" +
+                "Retrieving previous conversations and objections...";
+
+
+            try {
+
+                const response = await fetch(
+                    "/briefing?client_name=" +
+                    encodeURIComponent(clientName),
+                    {
+                        method: "POST"
+                    }
+                );
+
+
+                const data = await response.json();
+
+
+                if (response.ok) {
+
+                    briefing.innerText =
+                        data.strategic_brief ||
+                        "No briefing generated.";
+
+                    document.getElementById(
+                        "memoryStatus"
+                    ).innerText =
+                        "✓ Historical memories recalled for " +
+                        clientName;
+
+                } else {
+
+                    briefing.innerText =
+                        "Failed to generate briefing.";
+
+                }
+
+            } catch (error) {
+
+                briefing.innerText =
+                    "Server connection failed. Make sure FastAPI is running.";
+
+            }
+
+        }
+
+
+        // ==========================================
+        // MESSAGE HELPER
+        // ==========================================
+
+        function showMessage(
+            element,
+            text,
+            type
+        ) {
+
+            element.style.display = "block";
+
+            element.className =
+                "message " + type;
+
+            element.innerText = text;
+
+        }
+
+    </script>
+
+</body>
+</html>
